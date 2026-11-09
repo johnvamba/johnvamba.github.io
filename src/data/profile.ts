@@ -21,6 +21,7 @@ export const profile = {
   phone: "+639066680425",
   linkedin: "https://linkedin.com/in/john-amba",
   github: "https://github.com/johnvamba",
+  cv: "https://docs.google.com/document/d/1A-556iniV-YnwePLQBtdQ6Ugwt_wORhAjfPe5rhyx38/edit?usp=sharing",
 } as const;
 
 export type Metric = { label: string; value: string; note: string };

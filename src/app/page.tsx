@@ -1,4 +1,4 @@
-import { Mail, Phone, ArrowDown, MapPin } from "lucide-react";
+import { ArrowDownToLine, Mail, Phone, ArrowDown, MapPin } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/BrandIcons";
 import { Header } from "@/components/Header";
 import { Corners } from "@/components/Logo";
@@ -28,6 +28,9 @@ export default function Home() {
             <div className="row hero-actions">
               <a className="btn btn-primary" href="#projects">
                 View projects <ArrowDown size={16} strokeWidth={1.5} />
+              </a>
+              <a className="btn" href={`${profile.cv}`} target="_blank">
+                <ArrowDownToLine size={16} strokeWidth={1.5} /> Get CV
               </a>
               <a className="btn" href={`mailto:${profile.email}`}>
                 <Mail size={16} strokeWidth={1.5} /> Email me
