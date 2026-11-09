@@ -34,7 +34,7 @@ jobs:
       - name: Configure GitHub Pages
         id: pages
         if: github.event_name != 'pull_request'
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       # Project sites live at /<repo>/, user sites (<user>.github.io) and custom
       # domains at /. Set a repository variable BASE_PATH to override ("/" = root).
