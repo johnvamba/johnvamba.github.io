@@ -1,0 +1,91 @@
+name: CI / Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; let an in-progress production deploy finish.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Typecheck and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Configure GitHub Pages
+        id: pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      # Project sites live at /<repo>/, user sites (<user>.github.io) and custom
+      # domains at /. Set a repository variable BASE_PATH to override ("/" = root).
+      - name: Resolve base path
+        id: base
+        env:
+          OVERRIDE: ${{ vars.BASE_PATH }}
+          PAGES_BASE: ${{ steps.pages.outputs.base_path }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          if [ -n "$OVERRIDE" ]; then
+            BP="$OVERRIDE"
+          elif [ -n "${{ steps.pages.outcome }}" ] && [ "${{ steps.pages.outcome }}" = "success" ]; then
+            BP="$PAGES_BASE"
+          elif [[ "$REPO" == *.github.io ]]; then
+            BP=""
+          else
+            BP="/$REPO"
+          fi
+          [ "$BP" = "/" ] && BP=""
+          echo "path=$BP" >> "$GITHUB_OUTPUT"
+          echo "Base path: '${BP}'"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build static site
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.base.outputs.path }}
+          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    name: Deploy
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
