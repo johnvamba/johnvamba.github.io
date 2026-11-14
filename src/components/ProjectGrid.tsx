@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Layers3 } from "lucide-react";
 import type { Project, ProjectCategory } from "@/data/profile";
 import { Corners } from "./Logo";
 
@@ -33,7 +33,17 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
         {shown.map((p) => (
           <article key={p.name} className="bp card solid project-card">
             <Corners />
-            <span className="card-kicker">{p.stack}</span>
+            <div className={`project-preview${p.image ? " has-image" : ""}`}>
+              {p.image ? (
+                <img className="project-image" src={p.image} alt={`${p.name} project`} />
+              ) : (
+                <div role="img" aria-label={`Image placeholder for ${p.name}; stack: ${p.stack}`}>
+                  <Layers3 size={34} strokeWidth={1.5} aria-hidden="true" />
+                  <span className="spec">Project image coming soon</span>
+                  <span className="card-kicker">{p.stack}</span>
+                </div>
+              )}
+            </div>
             <h3 className="card-title">
               {p.url ? (
                 <a href={p.url} target="_blank" rel="noopener noreferrer">

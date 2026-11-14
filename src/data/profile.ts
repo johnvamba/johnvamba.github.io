@@ -206,6 +206,7 @@ export type Project = {
   result: string;
   bestFor: string;
   category: ProjectCategory;
+  image?: string;
   url?: string;
 };
 
@@ -242,7 +243,7 @@ export const projects: Project[] = [
   },
   {
     name: "Easyamends",
-    stack: "Full-stack web app",
+    stack: "Laravel · React",
     result: "Design proofing and annotation with fine-grained, multi-role permissions.",
     bestFor: "Multi-tenant roles, SaaS",
     category: "Full stack",
